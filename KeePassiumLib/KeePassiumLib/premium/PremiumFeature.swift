@@ -72,7 +72,7 @@ public enum PremiumFeature: Int {
              .canUseQuickTypeAutoFill,
              .canUseBusinessClouds,
              .canAuditPasswords:
-            return isEntitled
+            return true
         case .canChangeAppIcon,
              .canUseLongDatabaseTimeouts,
              .canKeepMasterKeyOnDatabaseTimeout:
