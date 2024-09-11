@@ -16,7 +16,7 @@
     </string>
     <string keyName="supportEmail">
       <defaultValue>
-        <value>org-support@keepassium.com</value>
+        <value>asiercallejo20@gmail.com</value>
       </defaultValue>
       <constraint nullable="true"></constraint>
     </string>
