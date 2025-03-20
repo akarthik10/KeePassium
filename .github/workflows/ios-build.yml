@@ -18,10 +18,10 @@ jobs:
         with:
           ruby-version: '3.1.0'
 
-      - name: Install Dependencies
-        run: |
-          gem install cocoapods
-          pod install
+      # - name: Install Dependencies
+      #   run: |
+      #     gem install cocoapods
+      #     pod install
 
       - name: Build with Xcode
         run: |
