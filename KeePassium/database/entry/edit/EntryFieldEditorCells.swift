@@ -76,7 +76,6 @@ class EntryFieldEditorTitleCell:
         titleTextField.font = UIFont.entryTextFont()
         titleTextField.validityDelegate = self
         titleTextField.delegate = self
-        titleTextField.addRandomizerEditMenu()
 
         iconButton.configuration = .tinted()
         iconButton.borderColor = .actionTint
@@ -139,6 +138,14 @@ class EntryFieldEditorTitleCell:
         guard textInput === titleTextField else { return }
         delegate?.didPressRandomize(for: textInput, viaMenu: true, in: self)
     }
+
+    func textField(
+        _ textField: UITextField,
+        editMenuForCharactersIn range: NSRange,
+        suggestedActions: [UIMenuElement]
+    ) -> UIMenu? {
+        return textField.addRandomizerEditMenu(to: suggestedActions)
+    }
 }
 
 class EntryFieldEditorSingleLineCell:
@@ -179,7 +186,6 @@ class EntryFieldEditorSingleLineCell:
 
         textField.validityDelegate = self
         textField.delegate = self
-        textField.addRandomizerEditMenu()
 
     }
 
@@ -228,6 +234,14 @@ class EntryFieldEditorSingleLineCell:
         guard textInput === textField else { return }
         delegate?.didPressRandomize(for: textInput, viaMenu: true, in: self)
     }
+
+    func textField(
+        _ textField: UITextField,
+        editMenuForCharactersIn range: NSRange,
+        suggestedActions: [UIMenuElement]
+    ) -> UIMenu? {
+        return textField.addRandomizerEditMenu(to: suggestedActions)
+    }
 }
 
 final class PasswordEntryFieldCell:
@@ -266,7 +280,6 @@ final class PasswordEntryFieldCell:
 
         textField.validityDelegate = self
         textField.delegate = self
-        textField.addRandomizerEditMenu()
     }
 
     override func becomeFirstResponder() -> Bool {
@@ -282,6 +295,14 @@ final class PasswordEntryFieldCell:
         guard let field = field else { return false }
         delegate?.didPressReturn(for: field, in: self)
         return false
+    }
+
+    func textField(
+        _ textField: UITextField,
+        editMenuForCharactersIn range: NSRange,
+        suggestedActions: [UIMenuElement]
+    ) -> UIMenu? {
+        return textField.addRandomizerEditMenu(to: suggestedActions)
     }
 
     func validatingTextField(_ sender: ValidatingTextField, textDidChange text: String) {
@@ -376,7 +397,6 @@ class EntryFieldEditorMultiLineCell:
 
         textView.validityDelegate = self
         textView.delegate = self
-        textView.addRandomizerEditMenu()
     }
 
     override func becomeFirstResponder() -> Bool {
@@ -402,6 +422,14 @@ class EntryFieldEditorMultiLineCell:
         guard textInput === textView else { return }
         delegate?.didPressRandomize(for: textInput, viaMenu: true, in: self)
     }
+
+    func textView(
+        _ textView: UITextView,
+        editMenuForTextIn range: NSRange,
+        suggestedActions: [UIMenuElement]
+    ) -> UIMenu? {
+        return textView.addRandomizerEditMenu(to: suggestedActions)
+    }
 }
 
 class EntryFieldEditorCustomFieldCell:
@@ -416,6 +444,7 @@ class EntryFieldEditorCustomFieldCell:
     public static let storyboardID = "CustomFieldCell"
     @IBOutlet private weak var nameTextField: ValidatingTextField!
     @IBOutlet private weak var valueTextView: ValidatingTextView!
+    @IBOutlet private weak var protectionSwitchLabel: UILabel!
     @IBOutlet private weak var protectionSwitch: UISwitch!
     @IBOutlet private weak var deleteButton: UIButton!
 
@@ -437,18 +466,19 @@ class EntryFieldEditorCustomFieldCell:
         valueTextView.font = UIFont.entryTextFont()
         valueTextView.adjustsFontForContentSizeCategory = true
 
+        protectionSwitchLabel.text = LString.titleProtectedField
+        protectionSwitchLabel.isAccessibilityElement = false
+        protectionSwitch.accessibilityLabel = LString.titleProtectedField
         protectionSwitch.addTarget(self, action: #selector(protectionDidChange), for: .valueChanged)
+
         deleteButton.accessibilityLabel = LString.actionDelete
         deleteButton.addTarget(self, action: #selector(didPressDelete), for: .touchUpInside)
 
         nameTextField.validityDelegate = self
         nameTextField.delegate = self
-        nameTextField.addRandomizerEditMenu()
 
         valueTextView.validityDelegate = self
         valueTextView.delegate = self
-        valueTextView.addRandomizerEditMenu()
-
     }
 
     override func becomeFirstResponder() -> Bool {
@@ -487,6 +517,22 @@ class EntryFieldEditorCustomFieldCell:
     func validatingTextViewShouldValidate(_ sender: ValidatingTextView) -> Bool {
         guard sender == valueTextView else { assertionFailure(); return false }
         return true 
+    }
+
+    func textField(
+        _ textField: UITextField,
+        editMenuForCharactersIn range: NSRange,
+        suggestedActions: [UIMenuElement]
+    ) -> UIMenu? {
+        return textField.addRandomizerEditMenu(to: suggestedActions)
+    }
+
+    func textView(
+        _ textView: UITextView,
+        editMenuForTextIn range: NSRange,
+        suggestedActions: [UIMenuElement]
+    ) -> UIMenu? {
+        return textView.addRandomizerEditMenu(to: suggestedActions)
     }
 
     func textInputDidRequestRandomizer(_ textInput: TextInputView) {

@@ -52,17 +52,14 @@
 /* Title of entry viewer's tab with previous revisions of the entry */
 "[Entry/Tab/History/title]" = "ประวัติ";
 
-/* Menu title. For example: `About KeePassium`. [appName: String] */
-"[Menu/About/title]" = "เกี่ยวกับ %@";
-
-/* Menu title: app settings */
-"[Menu/Preferences/title]" = "ตั้งค่าการทำงาน…";
-
 /* Action/button */
 "[Onboarding/AddExistingDatabase/action]" = "เพิ่มฐานข้อมูลที่มีอยู่แล้ว";
 
 /* Action/button to set up the App Protection feature. Not a call to action. */
 "[Onboarding/AppProtection/activate]" = "เปิดใช้งานแอปล็อก";
+
+/* Action/button to set up the Password AutoFill feature. Not a call to action. */
+"[Onboarding/AutoFill/activate]" = "เปิดใช้ป้อนรหัสอัตโนมัติ";
 
 /* Action/button */
 "[Onboarding/CreateNewDatabase/action]" = "สร้างฐานข้อมูลใหม่";

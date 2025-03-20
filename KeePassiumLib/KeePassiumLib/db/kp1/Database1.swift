@@ -59,6 +59,9 @@ public class Database1: Database {
         static let packing: Int64 = 10
     }
 
+    public override var peakKDFMemoryFootprint: Int {
+        return AESKDF.memoryFootprint
+    }
     override public var keyHelper: KeyHelper { return _keyHelper }
     private let _keyHelper = KeyHelper1()
 
@@ -461,13 +464,13 @@ public class Database1: Database {
 
         parentGroup.remove(group: group)
 
-        var subEntries = [Entry]()
-        group.collectAllEntries(to: &subEntries)
-
-        subEntries.forEach { entry in
-            entry.move(to: backupGroup)
-            entry.touch(.accessed, updateParents: false)
-        }
+        group.applyToAllChildren(
+            groupHandler: nil,
+            entryHandler: { entry in
+                entry.move(to: backupGroup)
+                entry.touch(.accessed, updateParents: false)
+            }
+        )
         Diag.debug("Delete group OK")
     }
 

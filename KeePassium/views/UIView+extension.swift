@@ -55,12 +55,6 @@ extension UIView {
     }
 
     func becomeFirstResponderWhenSafe() {
-        guard #available(iOS 14, *) else {
-            DispatchQueue.main.async { [weak self] in
-                self?.becomeFirstResponder()
-            }
-            return
-        }
         guard AppGroup.isAppExtension else {
             DispatchQueue.main.async { [weak self] in
                 self?.becomeFirstResponder()
@@ -72,5 +66,13 @@ extension UIView {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
             self?.becomeFirstResponder()
         }
+    }
+
+    func setVisible(_ visible: Bool) {
+        let isAlreadyVisible = !isHidden
+        guard visible != isAlreadyVisible else {
+            return
+        }
+        self.isHidden = !visible
     }
 }

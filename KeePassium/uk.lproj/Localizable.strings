@@ -1,6 +1,108 @@
 /* Title of the app history (changelog) screen */
 "[AppHistory/title]" = "Що нового";
 
+/* Notification when user tries to set up too weak an app protection passcode. */
+"[AppLock/weakPasscodeWarning]" = "Цей код доступу легко вгадати. Спробуйте ввести складніший.";
+
+/* Item in the credits list */
+"[Credits/Item/aexml]" = "AEXML, автор Marko Tadić";
+
+/* Item in the credits list */
+"[Credits/Item/argon2]" = "Алгоритм Argon2 і його реалізація, автори Daniel Dinu, Дмитрий Ховратович, Jean-Philippe Aumasson і Samuel Neves";
+
+/* Item in the credits list */
+"[Credits/Item/base32]" = "Base32 for Swift, автор Norio Nomura";
+
+/* Item in the credits list */
+"[Credits/Item/chaCha20]" = "Реалізація алгоритмів ChaCha20 та Salsa20, автор D. J. Bernstein";
+
+/* Item in the credits list */
+"[Credits/Item/fancyDebossPattern]" = "Fancy deboss pattern, автор Daniel Beaton";
+
+/* Item in the credits list */
+"[Credits/Item/featherIcons]" = "Іконки Feather, автор Cole Bemis";
+
+/* Item in the credits list */
+"[Credits/Item/gzipSwift]" = "GzipSwift автор 1024jp";
+
+/* Item in the credits list */
+"[Credits/Item/icons8]" = "Іконки від Icons8";
+
+/* Item in the credits list */
+"[Credits/Item/ionIcons]" = "Ionicons від Ionic";
+
+/* Item in the credits list */
+"[Credits/Item/keePass]" = "KeePass, автор Dominik Reichl";
+
+/* Item in the credits list */
+"[Credits/Item/keePassXCIcons]" = "Іконки команди KeePassXC";
+
+/* Item in the credits list */
+"[Credits/Item/lineIcons]" = "Linecons, автор Andrian Valeanu";
+
+/* Item in the credits list */
+"[Credits/Item/nuvolaIcons]" = "Іконки Nuvola, автор David Vignoni";
+
+/* Item in the credits list */
+"[Credits/Item/rijndael]" = "Реалізація алгоритму Rijndael, автор Szymon Stefanek";
+
+/* Item in the credits list */
+"[Credits/Item/swiftDomainParser]" = "SwiftDomainParser від Dashlane";
+
+/* Item in the credits list */
+"[Credits/Item/systemSettingsIcon]" = "Іконка системних налаштувань від Vicons Design";
+
+/* Item in the credits list */
+"[Credits/Item/toastSwift]" = "Toast-Swift, автор Charles Scalesse";
+
+/* Item in the credits list */
+"[Credits/Item/tpInappReceipt]" = "TPInAppReceipt, автор Павел Тихоненко";
+
+/* Item in the credits list */
+"[Credits/Item/translations]" = "Переклад Українською - Максим Пономаренко";
+
+/* Item in the credits list */
+"[Credits/Item/twoFish]" = "Реалізація алгоритму Twofish, автор Niels Ferguson";
+
+/* Item in the credits list */
+"[Credits/Item/wordlists]" = "Списки слів для кодових фраз від EFF";
+
+/* Item in the credits list */
+"[Credits/Item/yubico]" = "Yubico Mobile iOS SDK від Yubico AB";
+
+/* Item in the credits list */
+"[Credits/Item/zxcvbn]" = "zxcvbn-ios від Dropbox";
+
+/* License name for credits */
+"[Credits/License/apache2]" = "Ліцензія Apache 2.0";
+
+/* License name for credits */
+"[Credits/License/cc0]" = "Ліцензія CC0";
+
+/* License name for credits */
+"[Credits/License/ccBy3]" = "CC BY 3.0";
+
+/* License name for credits */
+"[Credits/License/ccByNd]" = "CC BY-ND 3.0";
+
+/* License name for credits */
+"[Credits/License/customPermissiveLicense]" = "Нестандартна дозвільна ліцензія";
+
+/* License name for credits */
+"[Credits/License/gpl]" = "Ліцензія GPL";
+
+/* License name for credits */
+"[Credits/License/lgpl]" = "Ліцензія LGPL";
+
+/* License name for credits */
+"[Credits/License/mit]" = "Ліцензія MIT";
+
+/* License name for credits */
+"[Credits/License/proprietary]" = "Комерційна ліцензія";
+
+/* License name for credits */
+"[Credits/License/publicDomain]" = "Суспільне надбання";
+
 /* Hint shown when both password and key file are empty. */
 "[Database/Create] Please enter a password or choose a key file." = "Введіть пароль або виберіть файл-ключ.";
 
@@ -37,6 +139,24 @@
 /* Predefined `Operating system` group in a new database */
 "[Database/Create/TemplateGroup/title] OS" = "Система";
 
+/* Notification when user sets up too weak a database password. */
+"[Database/Create/weakPasswordWarning]" = "Цей пароль легко вгадати. Спробуйте ввести складніший.";
+
+/* Description of favicon downloader feature. */
+"[Database/DownloadFavicons/intro]" = "KeePassium зв’яжеться з вебсайтами, пов’язаними з кожним записом.";
+
+/* Description of favicon downloader feature. 'Doing this' refers to downloading favicons. */
+"[Database/DownloadFavicons/warning]" = "Якщо ви робите це в публічній або контрольованій мережі, список вебсайтів, де у вас є обліковий запис, може стати загальнодоступним.";
+
+/* Warning that one key derivation function (KDF) should be preferred to another. Example: 'AES-KDF is considered weak. Use Argon2id instead.' */
+"[Database/KDF/consideredWeak]" = "%1$@ вважається слабким. Натомість використайте %2$@.";
+
+/* Notification message about encryption settings. */
+"[Database/KDF/tooSlow]" = "Ці налаштування можуть бути занадто повільними для деяких пристроїв.";
+
+/* Call to action when encryption settings are too weak. */
+"[Database/KDF/tooWeak]" = "Змініть налаштування для покращення захисту даних.";
+
 /* Confirmation message to replace an existing entry attachment with a new one. */
 "[Entry/Files/Add] Replace existing attachment?" = "Замінити існуючий файл?";
 
@@ -58,12 +178,6 @@
 /* Title of entry viewer's tab with advanced/secondary properties */
 "[Entry/Tab/More/title]" = "Більше";
 
-/* Menu title. For example: `About KeePassium`. [appName: String] */
-"[Menu/About/title]" = "Про програму %@";
-
-/* Menu title: app settings */
-"[Menu/Preferences/title]" = "Налаштування…";
-
 /* Action/button */
 "[Onboarding/AddExistingDatabase/action]" = "Додати свою базу паролів";
 
@@ -75,6 +189,18 @@
 
 /* Title of the App Protection onboarding screen */
 "[Onboarding/AppProtection/title]" = "Лише для ваших очей";
+
+/* Action/button to set up the Password AutoFill feature. Not a call to action. */
+"[Onboarding/AutoFill/activate]" = "Увімкнути Автозаповнення";
+
+/* Text in the Password AutoFill onboarding screen. */
+"[Onboarding/AutoFill/text1]" = "Завдяки автозаповненню ви можете вводити дані на сторінках входу одним натисканням кнопки.";
+
+/* Text in the Password AutoFill onboarding screen. */
+"[Onboarding/AutoFill/text2]" = "Щоб почати, активуйте автозаповнення паролів у налаштуваннях системи.";
+
+/* Title of the Password AutoFill onboarding screen */
+"[Onboarding/AutoFill/title]" = "Автозаповнення паролів";
 
 /* Action/button */
 "[Onboarding/CreateNewDatabase/action]" = "Створити нову базу";
@@ -180,6 +306,12 @@
 
 /* Title of the tag creation dialog */
 "[Tags/Create/title]" = "Новий тег";
+
+/* Question to confirm global deletion */
+"[Tags/Delete/Confirm/message]" = "Видалити цей тег з усіх груп і записів?";
+
+/* Title of a dialog for editing a tag */
+"[Tags/Edit/title]" = "Редагування тегу";
 
 /* Status message with a call to action */
 "[Tags/None/placeholder]" = "У базі паролів немає тегів. Ви можете їх додати.";

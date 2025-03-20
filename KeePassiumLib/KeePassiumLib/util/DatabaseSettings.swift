@@ -29,6 +29,8 @@ final public class DatabaseSettings: Eraseable {
     public var autofillFallbackStrategy: UnreachableFileFallbackStrategy?
     public var autofillFallbackTimeout: TimeInterval?
 
+    public var externalUpdateBehavior: ExternalUpdateBehavior?
+
     init() {
         isReadOnlyFile = false
     }
@@ -56,6 +58,8 @@ final public class DatabaseSettings: Eraseable {
         fallbackTimeout = nil
         autofillFallbackStrategy = nil
         autofillFallbackTimeout = nil
+
+        externalUpdateBehavior = nil
     }
 
     public func setMasterKey(_ key: CompositeKey) {
@@ -90,8 +94,11 @@ final public class DatabaseSettings: Eraseable {
     }
 
     public func maybeSetAssociatedKeyFile(_ urlRef: URLReference?) {
-        guard isRememberKeyFile ?? Settings.current.isKeepKeyFileAssociations else { return }
-        setAssociatedKeyFile(urlRef)
+        if isRememberKeyFile ?? Settings.current.isKeepKeyFileAssociations {
+            setAssociatedKeyFile(urlRef)
+        } else {
+            setAssociatedKeyFile(nil)
+        }
     }
 
     public func setAssociatedYubiKey(_ yubiKey: YubiKey?) {
@@ -99,8 +106,11 @@ final public class DatabaseSettings: Eraseable {
     }
 
     public func maybeSetAssociatedYubiKey(_ yubiKey: YubiKey?) {
-        guard isRememberHardwareKey ?? Settings.current.isKeepHardwareKeyAssociations else { return }
-        setAssociatedYubiKey(yubiKey)
+        if isRememberHardwareKey ?? Settings.current.isKeepHardwareKeyAssociations {
+            setAssociatedYubiKey(yubiKey)
+        } else {
+            setAssociatedYubiKey(nil)
+        }
     }
 }
 
@@ -121,6 +131,7 @@ extension DatabaseSettings: Codable {
         case fallbackTimeout
         case autofillFallbackStrategy
         case autofillFallbackTimeout
+        case externalUpdateBehavior
     }
 
     internal func serialize() -> Data {
@@ -158,6 +169,10 @@ extension DatabaseSettings: Codable {
         self.fallbackTimeout = try container.decodeIfPresent(TimeInterval.self, forKey: .fallbackTimeout)
         self.autofillFallbackStrategy = try container.decodeIfPresent(UnreachableFileFallbackStrategy.self, forKey: .autofillFallbackStrategy)
         self.autofillFallbackTimeout = try container.decodeIfPresent(TimeInterval.self, forKey: .autofillFallbackTimeout)
+        self.externalUpdateBehavior = try container.decodeIfPresent(
+            ExternalUpdateBehavior.self,
+            forKey: .externalUpdateBehavior
+        )
         // swiftlint:enable line_length
     }
 
@@ -199,6 +214,9 @@ extension DatabaseSettings: Codable {
         }
         if let _autofillFallbackTimeout = autofillFallbackTimeout {
             try container.encode(_autofillFallbackTimeout, forKey: .autofillFallbackTimeout)
+        }
+        if let _externalUpdateBehavior = externalUpdateBehavior {
+            try container.encode(_externalUpdateBehavior, forKey: .externalUpdateBehavior)
         }
     }
 }

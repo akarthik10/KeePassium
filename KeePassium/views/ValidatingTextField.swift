@@ -186,6 +186,18 @@ extension ValidatingTextField: UITextFieldDelegate {
 
     func textField(
         _ textField: UITextField,
+        editMenuForCharactersIn range: NSRange,
+        suggestedActions: [UIMenuElement]
+    ) -> UIMenu? {
+        return externalDelegate?.textField?(
+            textField,
+            editMenuForCharactersIn: range,
+            suggestedActions: suggestedActions
+        )
+    }
+
+    func textField(
+        _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
@@ -208,7 +220,6 @@ extension ValidatingTextField: UITextFieldDelegate {
         return externalDelegate?.textFieldShouldReturn?(textField) ?? true
     }
 
-    @available(iOS 13, *)
     func textFieldDidChangeSelection(_ textField: UITextField) {
         externalDelegate?.textFieldDidChangeSelection?(textField)
     }

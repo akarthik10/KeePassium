@@ -26,7 +26,9 @@ public enum FileProvider: Hashable {
         "com.apple.CloudDocs.MobileDocumentsFileProvider": .iCloudDriveLegacy,
         "com.imagam.ifiles2.docsfileprovider": .imagamIFiles,
         "com.keepassium.fileprovider.webdav": .keepassiumWebDAV,
-        "com.keepassium.fileprovider.onedrive": .keepassiumOneDrive,
+        "com.keepassium.fileprovider.onedrive": .keepassiumOneDriveLegacy,
+        "com.keepassium.fileprovider.onedrive.personal": .keepassiumOneDrivePersonal,
+        "com.keepassium.fileprovider.onedrive.business": .keepassiumOneDriveBusiness,
         "com.keepassium.fileprovider.dropbox": .keepassiumDropbox,
         "com.keepassium.fileprovider.googledrive": .keepassiumGoogleDrive,
         "mega.ios.MEGAPickerFileProvider": .megaNz,
@@ -67,7 +69,11 @@ public enum FileProvider: Hashable {
     case iCloudDriveLegacy
     case imagamIFiles
     case keepassiumWebDAV
-    case keepassiumOneDrive
+
+    case keepassiumOneDriveLegacy
+    case keepassiumOneDrivePersonal
+    case keepassiumOneDriveBusiness
+
     case keepassiumDropbox
     case keepassiumGoogleDrive
     case megaNz
@@ -171,8 +177,13 @@ public enum FileProvider: Hashable {
             return "iFiles"
         case .keepassiumWebDAV:
             return LString.connectionTypeWebDAV
-        case .keepassiumOneDrive:
+        case .keepassiumOneDriveLegacy:
+            assertionFailure("Unrecognized OneDrive type. Should be either Personal or Business instead")
             return LString.connectionTypeOneDrive
+        case .keepassiumOneDrivePersonal:
+            return LString.connectionTypeOneDrivePersonal
+        case .keepassiumOneDriveBusiness:
+            return LString.connectionTypeOneDriveForBusiness
         case .keepassiumDropbox:
             return LString.connectionTypeDropbox
         case .keepassiumGoogleDrive:
@@ -330,5 +341,23 @@ public enum FileProvider: Hashable {
 
     public static func find(for url: URL) -> FileProvider? {
         return DataSourceFactory.findInAppFileProvider(for: url)
+    }
+
+    public var isInAppFileProvider: Bool {
+        switch self {
+        case .keepassiumWebDAV,
+             .keepassiumOneDriveLegacy,
+             .keepassiumOneDrivePersonal,
+             .keepassiumOneDriveBusiness,
+             .keepassiumDropbox,
+             .keepassiumGoogleDrive:
+            return true
+        default:
+            return false
+        }
+    }
+
+    public var isSystemFileProvider: Bool {
+        return !isInAppFileProvider
     }
 }

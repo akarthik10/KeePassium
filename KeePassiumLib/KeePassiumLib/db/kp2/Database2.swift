@@ -142,6 +142,8 @@ public class Database2: Database {
     override public var keyHelper: KeyHelper { return _keyHelper }
     private let _keyHelper = KeyHelper2()
 
+    public override var peakKDFMemoryFootprint: Int { header.peakKDFMemoryFootprint }
+
     override public init() {
         super.init()
         header = Header2(database: self)
@@ -746,19 +748,21 @@ public class Database2: Database {
 
     private func updateBinaries(root: Group2) {
         Diag.verbose("Updating all binaries")
-        var allEntries = [Entry2]() as [Entry]
-        root.collectAllEntries(to: &allEntries)
 
         var oldBinaryPoolInverse = [ByteArray: Binary2]()
         binaries.values.forEach { oldBinaryPoolInverse[$0.data] = $0 }
 
         var newBinaryPoolInverse = [ByteArray: Binary2]()
-        for entry in allEntries {
-            updateBinaries(
-                entry: entry as! Entry2,
-                oldPoolInverse: oldBinaryPoolInverse,
-                newPoolInverse: &newBinaryPoolInverse)
-        }
+        root.applyToAllChildren(
+            groupHandler: nil,
+            entryHandler: { [self] entry in
+                updateBinaries(
+                    entry: entry as! Entry2,
+                    oldPoolInverse: oldBinaryPoolInverse,
+                    newPoolInverse: &newBinaryPoolInverse
+                )
+            }
+        )
         binaries.removeAll()
         newBinaryPoolInverse.values.forEach { binaries[$0.id] = $0 }
     }
@@ -1102,20 +1106,20 @@ public class Database2: Database {
     func setAllTimestamps(to time: Date) {
         meta.setAllTimestamps(to: time)
 
-        guard let root = root else { return }
-        var groups: [Group] = [root]
-        var entries: [Entry] = []
-        root.collectAllChildren(groups: &groups, entries: &entries)
-        for group in groups {
-            group.creationTime = time
-            group.lastAccessTime = time
-            group.lastModificationTime = time
-        }
-        for entry in entries {
-            entry.creationTime = time
-            entry.lastModificationTime = time
-            entry.lastAccessTime = time
-        }
+        guard let root else { return }
+        root.applyToAllChildren(
+            includeSelf: true,
+            groupHandler: { group in
+                group.creationTime = time
+                group.lastAccessTime = time
+                group.lastModificationTime = time
+            },
+            entryHandler: { entry in
+                entry.creationTime = time
+                entry.lastModificationTime = time
+                entry.lastAccessTime = time
+            }
+        )
     }
 
 
@@ -1126,10 +1130,6 @@ public class Database2: Database {
             return
         }
 
-        var subGroups = [Group]()
-        var subEntries = [Entry]()
-        group.collectAllChildren(groups: &subGroups, entries: &subEntries)
-
         let moveOnly = !group.isDeleted && meta.isRecycleBinEnabled
         if moveOnly,
            let backupGroup = getBackupGroup(createIfMissing: meta.isRecycleBinEnabled)
@@ -1139,16 +1139,18 @@ public class Database2: Database {
             group.touch(.accessed, updateParents: false)
 
             group.isDeleted = true
-            subGroups.forEach { $0.isDeleted = true }
-            subEntries.forEach { $0.isDeleted = true }
+            group.applyToAllChildren(
+                groupHandler: { $0.isDeleted = true },
+                entryHandler: { $0.isDeleted = true })
         } else {
             Diag.debug("Removing the group permanently.")
             if group === getBackupGroup(createIfMissing: false) {
                 meta?.resetRecycleBinGroupUUID()
             }
             addDeletedObject(uuid: group.uuid)
-            subGroups.forEach { addDeletedObject(uuid: $0.uuid) }
-            subEntries.forEach { addDeletedObject(uuid: $0.uuid) }
+            group.applyToAllChildren(
+                groupHandler: { self.addDeletedObject(uuid: $0.uuid) },
+                entryHandler: { self.addDeletedObject(uuid: $0.uuid) })
             parentGroup.remove(group: group)
         }
         Diag.debug("Delete group OK")
@@ -1264,6 +1266,13 @@ public class Database2: Database {
                 (entry as! Entry2).enforceCustomIconUUID(isValid: knownIconUUIDs)
             }
         )
+    }
+
+    public func setPasskey(_ passkey: Passkey, for entry: Entry2) {
+        entry.backupState()
+        passkey.apply(to: entry)
+        entry.touch(.accessed)
+        entry.touch(.modified, updateParents: false)
     }
 }
 

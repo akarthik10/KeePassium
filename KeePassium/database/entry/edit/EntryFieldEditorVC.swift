@@ -59,7 +59,7 @@ final class EntryFieldEditorVC: UITableViewController, Refreshable {
 
     var itemCategory = ItemCategory.default
     var allowsCustomFields = false
-    var allowsFaviconDownload = true
+    var supportsFaviconDownload = true
 
     private weak var iconButton: UIButton?
 
@@ -150,8 +150,12 @@ final class EntryFieldEditorVC: UITableViewController, Refreshable {
         }
 
         otpSetupButton.setTitle(LString.otpSetUpOTPAction, for: .normal)
-        otpSetupButton.showsMenuAsPrimaryAction = true
-        otpSetupButton.menu = UIMenu(children: [qrCodeSetupAction, manualSetupAction])
+        if ProcessInfo.isRunningOnMac {
+            otpSetupButton.addAction(manualSetupAction, for: .touchUpInside)
+        } else {
+            otpSetupButton.showsMenuAsPrimaryAction = true
+            otpSetupButton.menu = UIMenu(children: [qrCodeSetupAction, manualSetupAction])
+        }
     }
 
 
@@ -586,8 +590,11 @@ extension EntryFieldEditorVC: EditableFieldCellDelegate {
         )
 
         var faviconDownloadAttributes = UIMenuElement.Attributes()
-        if !allowsFaviconDownload {
+        if !supportsFaviconDownload {
             faviconDownloadAttributes.insert(.hidden)
+        }
+        if !ManagedAppConfig.shared.isFaviconDownloadAllowed {
+            faviconDownloadAttributes.insert(.disabled)
         }
 
         if let urlField = fields.first(where: { $0.internalName == EntryField.url }),

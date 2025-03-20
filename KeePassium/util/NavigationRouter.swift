@@ -45,9 +45,6 @@ final public class RouterNavigationController: UINavigationController {
     }
 
     private func setupBarAppearance() {
-        guard #available(iOS 15.0, *) else {
-            return
-        }
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.configureWithDefaultBackground()
         navBarAppearance.backgroundColor = .systemBackground
@@ -452,12 +449,14 @@ extension UIViewController {
 
 fileprivate extension UINavigationController {
     func popViewController(animated: Bool, completion: (() -> Void)?) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock {
+        popViewController(animated: animated)
+        if animated, let coordinator = transitionCoordinator {
+            coordinator.animate(alongsideTransition: nil) { _ in
+                completion?()
+            }
+        } else {
             completion?()
         }
-        popViewController(animated: animated)
-        CATransaction.commit()
     }
 
     func popToViewController(
@@ -465,11 +464,13 @@ fileprivate extension UINavigationController {
         animated: Bool,
         completion: (() -> Void)?
     ) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock {
+        popToViewController(viewController, animated: animated)
+        if animated, let coordinator = transitionCoordinator {
+            coordinator.animate(alongsideTransition: nil) { _ in
+                completion?()
+            }
+        } else {
             completion?()
         }
-        popToViewController(viewController, animated: animated)
-        CATransaction.commit()
     }
 }

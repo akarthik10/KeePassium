@@ -8,7 +8,7 @@
 
 import AuthenticationServices
 
-extension ASExtensionError.Code: CustomStringConvertible {
+extension ASExtensionError.Code: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .failed:
@@ -19,6 +19,8 @@ extension ASExtensionError.Code: CustomStringConvertible {
             return ".userInteractionRequired"
         case .credentialIdentityNotFound:
             return ".credentialIdentityNotFound"
+        case .matchedExcludedCredential:
+            return ".matchedExcludedCredential"
         @unknown default:
             return "(unknown)"
         }

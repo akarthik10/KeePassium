@@ -1,5 +1,188 @@
 #CHANGELOG
 
+## [2.3.163] - 2025-01-17
+
+### Added
+
+- Use minus sign to exclude terms from search results (#401) [thanks, everyone]
+- iOS: Custom actions when device is shaken (see Data Protection settings)
+
+### Fixed
+
+- AutoFill: Opening of last-used database (#412) [thanks, everyone]
+- Preserve DB association for not-imported key files [thanks, Ken]
+- macOS: UI fixes in Premium Upgrade dialog (#418, #419) [thanks, vit9696]
+- macOS: Allow smaller app window [thanks, Luke] 
+- macOS: Settings menu text (#414) [thanks, Eitot]
+- Org: Crash when entering text [thanks, everyone]
+
+
+## [2.2.162] - 2024-12-22
+
+### Improved
+
+- Minor UI improvements
+
+
+## [2.2.161] - 2024-12-22
+
+### Removed
+
+- macOS: Removed QR-based OTP setup menu, otherwise Apple blocks the update.
+
+
+## [2.2.160] - 2024-12-20
+
+### Removed
+
+- macOS: Removed unused camera permission (since there is no QR scanner)
+
+
+## [2.1.159] - 2024-12-19
+
+### Improved
+
+- AutoFill: Create passkeys to an existing entry (#297) [thanks, everyone]
+- Updated IT, NL, zh-CN translations [thanks, everyone]
+
+### Fixed
+
+- AutoFill: Behavior when local DBs are unavailable (#381)
+- AutoFill: When appropriate, accept _either_ passkeys or passwords (#405) [thanks, bob-lobster]
+- AutoFill: Prevent passkey creation in read-only DBs (#404) [thanks, Jerroder]
+- AutoFill: Partial fix for QR-based passkey assertions (#408) [thanks, everyone]
+- It was impossible to enter a strong app passcode (regression in 1.54.155) (#409) [thanks, Jan and Yuri]
+- Enforce file timeouts on all direct connections (#398) [thanks, jasperweiss]
+- Some strings were shown untranslated [thanks, Francesco]
+- Replaced deprecated UIMenuController
+
+
+## [2.0.158] - 2024-12-12
+
+### Changed
+
+- Version bump to celebrate the official release of KeePassium for macOS.
+
+
+## [1.54.157] - 2024-12-09
+
+### Added 
+
+- macOS: Database export to CSV format (#262)
+- Search for passkeys (is:passkey) and large attachments (is:large)
+
+### Improved
+
+- AutoFill: faster Quick mode for remote databases, prefers local cache (#391) [thanks, jasperweiss]
+- AutoFill: Warn if not enough memory to save changes
+- Updated all translations [thanks, everyone]
+- Minor UI fixes here and there [thanks, everyone]
+
+### Fixed
+
+- AutoFill: passkey creation on iOS 17 / macOS 14
+- AutoFill: passkey creation when there is already a perfect match
+- AutoFill: Empty Caller ID when creating a passkey [thanks, jasperweiss]
+- AutoFill: Keyboard could cover Passkey creation dialog [thanks, jasperweiss]
+- Crash when changing group/entry icon on iOS 18 [thanks, everyone]
+- AutoFill setup messages updated for iOS 18
+- Possible crash when closing on iOS 18
+- Org: disable UI for storage locations blocked by AppConfig [thanks, S.G.]
+
+
+## [1.54.156] - 2024-11-28
+
+### Added
+
+- AutoFill: Create new passkeys (#297)
+
+### Improved
+
+- macOS: Main menu, toolbar and keyboard shortcuts
+- Org: Updated to MSAL 1.6.2 and Intune SDK 20.2.1
+
+### Fixed
+
+- macOS: can be built for Intel again (excluded yubikit-ios from macOS build)
+- Added iPhone 16, iPad Air 6/7 and iPad Pro 7 to YubiKit device recognition
+
+
+## [1.54.155] - 2024-11-14
+
+### Added
+
+- AutoFill: Sign in using existing passkeys (#297)
+- AutoFill: Insert any field to any input via context menu (iOS 18+) (#396)
+- AutoFill: Fill out OTP codes (iOS 18+)
+
+### Changed
+
+- This version requires at least iOS 17 / macOS 14
+- Org: Updated to MSAL 1.6.1 and Intune SDK 20.1.2
+
+### Improved
+
+- Protecting key file field like a password [thanks, Jason]
+- Added possibility to download favicons for selected entries (#320)
+- Added possibility to delete unused custom icons
+- Replaced Entry Viewer tab titles with icons
+- Folder lists are sorted for all direct connections now
+- Entry Viewer indicates presence of attachments in Files tab [thanks, u/gripe_and_complain]
+- Removed post-AutoFill popups with OTP codes as redundant
+- Updated all translations [thanks, everyone]
+- Org: New parameters for managed AppConfig: `allowAppProtection`, `minimumAppPasscodeLength`, `minimumDatabasePasswordLength`, `allowDatabasePrint`, `allowDatabaseEncryptionSettings`, and default KDF settings [thanks, S.G.]
+- Org: Managed parameter `allowedFileProviders` can be defined as string [thanks, S.G.]
+- Org: OneDrive Personal and Business can be allowed/blocked separately [thanks, S.G.]
+
+### Fixed
+
+- macOS: AutoFill dialog could get stuck in a blank state (#392)
+- macOS: Tag selection/deselection did not work properly
+- AutoFill could load databases twice sometimes
+- Incorrect processing on `otpauth` URIs
+- Enforce strength checks on new app passcode and DB passwords (KEE-01-001)
+- Warn about risks of bulk favicon download (KEE-01-002)
+- Enforce reasonable KDF parameter limits (KEE-01-003)
+
+
+## [1.53.154] - 2024-09-12
+
+### Added
+
+- Support for linked databases aka AutoOpen (#202) [thanks, everyone]
+- Support for extended search syntax (closes #190 and #383) [thanks, everyone]
+- Detecting external DB changes on app activation (related #373)
+- Ability to hide local files from iOS Files / macOS Finder [thanks, everyone]
+- Added OTP overview mode in smart group (closes #8) [thanks, everyone]
+
+### Improved
+
+- Allow entry field references in free version, no longer a premium feature
+- Refined DB viewer and DB picker toolbars and menus
+- New parameters for managed AppConfig: `allowFaviconDownload` and `allowPasswordAudit` [thanks, I.R.]
+- Possibility to disable copy-to-clipboard via managed AppConfig
+- Added presets to Smart Group Editor
+- macOS: Propose app reset if launching with Ctrl pressed
+- Enable cache fallback for local DBs (#381) [thanks, Andreas]
+- AutoFill: notify user if main app's dir unavailable (closes #381) [thanks, Andreas]
+- Improved AutoFill setup workflow
+- Updated all translations [thanks, everyone]
+- Minor UI improvements here and there
+
+### Fixed
+
+- macOS: Copying of URLs (fixes #384) [thanks, Johannes]
+- macOS: Printing in "Designed for iPad" builds [thanks, Bernhard]
+- Processing WebDAV file lists without namespaces [thanks, D.J.]
+- Some toolbar buttons were untranslated in VoiceOver mode [thanks, Michael]
+- Org: Ignore local files if local storage is forbidden via AppConfig [thanks, I.R.]
+- Enforcing clipboard timeout also in text fields' menus
+- macOS: DB saving after drag-and-drop reorder and bulk operations
+- Wrapping of long group titles in DB viewer (regression in 1.53.152)
+- macOS: fixed entry selection (regression in 1.53.153)
+- DB viewer could crash when deleting in mutli-select mode
+
+
 ## [1.53.153] - 2024-07-20
 
 ### Fixed

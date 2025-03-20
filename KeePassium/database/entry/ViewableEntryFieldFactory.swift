@@ -20,7 +20,7 @@ protocol ViewableField: AnyObject {
 
     var value: String? { get }
     var resolvedValue: String? { get }
-    var decoratedValue: String? { get }
+    var decoratedResolvedValue: String? { get }
 
     var isProtected: Bool { get }
 
@@ -48,9 +48,10 @@ class BasicViewableField: ViewableField {
     weak var field: EntryField?
 
     var internalName: String { return field?.name ?? "" }
+    var visibleName: String { return field?.visibleName ?? "" }
     var value: String? { return field?.value }
     var resolvedValue: String? { return field?.resolvedValue }
-    var decoratedValue: String? { return field?.premiumDecoratedValue }
+    var decoratedResolvedValue: String? { return field?.decoratedResolvedValue }
     var isProtected: Bool { return field?.isProtected ?? false }
     var isFixed: Bool {
         guard let field else { return false }
@@ -65,19 +66,6 @@ class BasicViewableField: ViewableField {
 
     var isEditable: Bool { return true }
 
-    var visibleName: String {
-        switch internalName {
-        case EntryField.title: return LString.fieldTitle
-        case EntryField.userName: return LString.fieldUserName
-        case EntryField.password: return LString.fieldPassword
-        case EntryField.url: return LString.fieldURL
-        case EntryField.notes: return LString.fieldNotes
-        case EntryField.tags: return LString.fieldTags
-        default:
-            return internalName
-        }
-    }
-
     convenience init(field: EntryField, isValueHidden: Bool) {
         self.init(fieldOrNil: field, isValueHidden: isValueHidden)
     }
@@ -86,6 +74,29 @@ class BasicViewableField: ViewableField {
         self.field = field
         self.isValueHidden = isValueHidden
         self.isHeightConstrained = true
+    }
+}
+
+class PasskeyViewableField: BasicViewableField {
+    private let passkey: Passkey
+
+    public var relyingParty: String { passkey.relyingParty }
+    public var username: String { passkey.username }
+
+    override var internalName: String { EntryField.passkey }
+    override var visibleName: String { LString.fieldPasskey }
+    override var value: String? {
+        [relyingParty, username].joined(separator: "\n")
+    }
+    override var resolvedValue: String? { value }
+    override var isProtected: Bool { false }
+    override var isFixed: Bool { true }
+    override var isEditable: Bool { false }
+
+    init(passkey: Passkey) {
+        self.passkey = passkey
+        super.init(fieldOrNil: nil, isValueHidden: false)
+        isAuditable = false
     }
 }
 
@@ -116,7 +127,7 @@ class TOTPViewableField: DynamicViewableField {
     override var resolvedValue: String? {
         return value
     }
-    override var decoratedValue: String? {
+    override var decoratedResolvedValue: String? {
         return value
     }
 
@@ -141,6 +152,7 @@ class ViewableEntryFieldFactory {
         case emptyValues
         case nonEditable
         case otpConfig
+        case passkeyConfig
     }
 
     static func makeAll(
@@ -151,6 +163,8 @@ class ViewableEntryFieldFactory {
         var result = [ViewableField]()
 
         let hasValidOTPConfig = TOTPGeneratorFactory.makeGenerator(for: entry) != nil
+        let passkey = Passkey.make(from: entry)
+        let hasValidPasskeyConfig = passkey != nil
         let isAuditable = (entry as? Entry2)?.qualityCheck ?? true
 
         var excludedFieldNames = Set<String>()
@@ -165,6 +179,15 @@ class ViewableEntryFieldFactory {
             excludedFieldNames.insert(EntryField.timeOtpPeriod)
             excludedFieldNames.insert(EntryField.timeOtpSecret)
             excludedFieldNames.insert(EntryField.timeOtpAlgorithm)
+        }
+        if hasValidPasskeyConfig && excludedFields.contains(.passkeyConfig) {
+            excludedFieldNames.formUnion([
+                EntryField.passkeyCredentialID,
+                EntryField.passkeyRelyingParty,
+                EntryField.passkeyPrivateKeyPEM,
+                EntryField.passkeyUserHandle,
+                EntryField.passkeyUsername,
+            ])
         }
         let excludeEmptyValues = excludedFields.contains(.emptyValues)
         let excludeNonEditable = excludedFields.contains(.nonEditable)
@@ -184,7 +207,11 @@ class ViewableEntryFieldFactory {
         if hasValidOTPConfig && !excludeNonEditable {
             result.append(TOTPViewableField(fields: entry.fields))
         }
-
+        if let passkey,
+           !excludeNonEditable
+        {
+            result.append(PasskeyViewableField(passkey: passkey))
+        }
         return result
     }
 

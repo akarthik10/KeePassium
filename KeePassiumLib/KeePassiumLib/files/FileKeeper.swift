@@ -56,11 +56,37 @@ public class FileKeeper {
         return true
     }()
 
-    public static var canAccessAppSandbox: Bool {
+    public static var canPossiblyAccessAppSandbox: Bool {
         if platformSupportsSharedReferences {
             return true
         } else {
             return AppGroup.isMainApp
+        }
+    }
+
+    public var canActuallyAccessAppSandbox: Bool {
+        guard AppGroup.isAppExtension else {
+            return true
+        }
+        guard Self.platformSupportsSharedReferences else {
+            return false
+        }
+        let extensionSandboxURL = FileManager.default
+            .urls(for: .documentDirectory, in: .userDomainMask)
+            .first!
+            .standardizedFileURL
+        let gotTheRightURL = (docDirURL != extensionSandboxURL)
+        guard gotTheRightURL else {
+            return false
+        }
+        do {
+            try FileManager.default.contentsOfDirectory(
+                at: docDirURL,
+                includingPropertiesForKeys: [.isReadableKey],
+                options: [])
+            return true
+        } catch {
+            return false
         }
     }
 
@@ -310,6 +336,11 @@ public class FileKeeper {
     }
 
     func scanLocalDirectory(_ dirURL: URL, fileType: FileType) -> [URLReference] {
+        guard FileProvider.localStorage.isAllowed else {
+            Diag.debug("Local storage disabled by the organization.")
+            return []
+        }
+
         var refs: [URLReference] = []
         let location = getLocation(for: dirURL)
         assert(location.isInternal, "This should be used only on local directories.")
@@ -879,7 +910,7 @@ public class FileKeeper {
                 ofItemAtPath: backupFileURL.path)
 
             let isExcludeFromBackup = Settings.current.isExcludeBackupFilesFromSystemBackup
-            backupFileURL.setExcludedFromBackup(isExcludeFromBackup)
+            backupFileURL.setFileAttribute(.excludedFromBackup, to: isExcludeFromBackup)
             if let newlyTimestampedSHA256 = newlyTimestampedSHA256 {
                 do {
                     try backupFileURL.setExtendedAttribute(

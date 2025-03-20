@@ -90,11 +90,6 @@ extension LString {
         bundle: Bundle.framework,
         value: "These hardware keys are not available in AutoFill.",
         comment: "Information notice for a list of hardware keys.")
-    public static let iOSVersionTooOldForHardwareKey = NSLocalizedString(
-        "[HardwareKey/NFC/OS too old]",
-        bundle: Bundle.framework,
-        value: "NFC requires iOS 13 or later.",
-        comment: "A notification that NFC (Near Field Communication) interface is not supported by the current iOS version.")
     public static let usbUnavailableIPadAppOnMac = NSLocalizedString(
         "[HardwareKey/USB/iPadAppOnMac]",
         bundle: Bundle.framework,
@@ -170,6 +165,29 @@ extension LString {
         value: "Re-add File",
         comment: "Title: what to do when a cloud-stored file cannot be loaded. (For example: `If File is Unreachable: Re-add File`.)")
 
+    public static let titleIfDatabaseModifiedExternally = NSLocalizedString(
+        "[Database/Settings/ExternalChanges/title]",
+        bundle: Bundle.framework,
+        value: "Database Modified Externally",
+        comment: "File settings parameter: what to do when file was changed by another app/device. (For example: `Database Modified Externally: Notify`)")
+
+    public static let titleIfDatabaseModifiedExternallyDontCheck = NSLocalizedString(
+        "[Database/Settings/ExternalChanges/dontCheck]",
+        bundle: Bundle.framework,
+        value: "Don't check",
+        comment: "File settings parameter: what to do when file was changed by another app/device. (For example: `Database Modified Externally: Don't check`)")
+
+    public static let titleIfDatabaseModifiedExternallyNotify = NSLocalizedString(
+        "[Database/Settings/ExternalChanges/notify]",
+        bundle: Bundle.framework,
+        value: "Notify",
+        comment: "File settings parameter: what to do when file was changed by another app/device. (For example: `Database Modified Externally: Notify`)")
+
+    public static let titleIfDatabaseModifiedExternallyReload = NSLocalizedString(
+        "[Database/Settings/ExternalChanges/reload]",
+        bundle: Bundle.framework,
+        value: "Reload Automatically",
+        comment: "File settings parameter: what to do when file was changed by another app/device. (For example: `Database Modified Externally: Reload Automatically`)")
 
     public static let actionChangeEncryptionSettings = NSLocalizedString(
         "[Database/EncryptionSettings/Change/action]",
@@ -240,6 +258,12 @@ extension LString {
     )
 
 
+    public static let titleSortItemsBy = NSLocalizedString(
+        "[Menu/Sort] Sort Items By",
+        bundle: Bundle.framework,
+        value: "Sort Items By",
+        comment: "Title of a menu: sort order of groups and entries in a list")
+
     public static let titleEntrySubtitle = NSLocalizedString(
         "[Settings/GroupViewer] Entry Subtitle",
         bundle: Bundle.framework,
@@ -250,6 +274,21 @@ extension LString {
         bundle: Bundle.framework,
         value: "Sort Order",
         comment: "Title of a settings section: sort order of groups and entries in a list")
+    public static let titleSortByNone = NSLocalizedString(
+        "[SortBy/None]",
+        bundle: Bundle.framework,
+        value: "None",
+        comment: "List sorting option, when no sorting is selected. Example: 'Sort by: None'")
+    public static let titleSortOrderCustom = NSLocalizedString(
+        "[SortOrder/Custom]",
+        bundle: Bundle.framework,
+        value: "Custom",
+        comment: "List sorting option, when items are manually ordered by the user. Example: 'Sort order: Custom'")
+    public static let titleSortByFileName = NSLocalizedString(
+        "[SortBy/FileName]",
+        bundle: Bundle.framework,
+        value: "Name",
+        comment: "List sorting option (for file names). Example: 'Sort by: Name'")
     public static let titleListSettings = NSLocalizedString(
         "[Settings/ListSettings/title]",
         bundle: Bundle.framework,
@@ -307,6 +346,21 @@ extension LString {
         comment: "Title of a list with previous versions/revisions of an entry.")
 
 
+    public static let titleDatabases = NSLocalizedString(
+        "[Database/List/title]",
+        bundle: Bundle.framework,
+        value: "Databases",
+        comment: "Title of the database picker list")
+    public static let messageLocalFilesMissing = NSLocalizedString(
+        "[Database/List/LocalMissing/message]",
+        bundle: Bundle.framework,
+        value: "If some local files are not listed, launch the main KeePassium app first.",
+        comment: "Recommendation for solving a problem with a list of files.")
+    public static let titleSortFilesBy = NSLocalizedString(
+        "[Menu/Sort] Sort Files By",
+        bundle: Bundle.framework,
+        value: "Sort Files By",
+        comment: "Title of a menu: sort order of files in a list")
     public static let titleShowBackupFiles = NSLocalizedString(
         "Show Backup Files",
         bundle: Bundle.framework,
@@ -357,12 +411,58 @@ extension LString {
         bundle: Bundle.framework,
         value: "All your data will be preserved.",
         comment: "Info message when changing database file format.")
+    public static let titleDatabaseFormatDoesNotSupportPasskeys = NSLocalizedString(
+        "[Database/FormatVersion/PasskeysNotSupported]",
+        bundle: Bundle.framework,
+        value: "Current database format does not support passkeys.",
+        comment: "Error message when creating a new passkey.")
 
+    public static let titleUnsavedChanges = NSLocalizedString(
+        "[Database/UnsavedChanges/title]",
+        bundle: Bundle.framework,
+        value: "Unsaved Changes",
+        comment: "Title: there are temporary changes to be saved")
+    public static let messageAutoFillCannotModify = NSLocalizedString(
+        "[Database/UnsavedChanges/cannotModifyYet]",
+        bundle: Bundle.framework,
+        value: "Unfortunately, AutoFill cannot modify large databases yet. We are working to resolve this.",
+        comment: "Notification message")
+    public static let titleDatabaseHasUnsavedChanges = NSLocalizedString(
+        "[Database/UnsavedChanges/thisDatabase]",
+        bundle: Bundle.framework,
+        value: "This database has unsaved changes made in AutoFill.",
+        comment: "Notification message")
+    public static let titleAutoFillCouldNotSaveChanges = NSLocalizedString(
+        "[Database/UnsavedChanges/autoFillCrashed]",
+        bundle: Bundle.framework,
+        value: "AutoFill could not save some changes due to a technical limitation.",
+        comment: "Notification message")
+    public static let titleOpenAppToSaveChanges = NSLocalizedString(
+        "[Database/UnsavedChanges/OpenAppCallToAction]",
+        bundle: Bundle.framework,
+        value: "To save changes, open the main KeePassium app.",
+        comment: "Call to action shown in AutoFill module.")
+    public static let titleSomeDatabasesHaveUnsavedChanges = NSLocalizedString(
+        "[Database/UnsavedChanges/someDatabases]",
+        bundle: Bundle.framework,
+        value: "One or more databases have unsaved changes made in AutoFill.",
+        comment: "Notification message")
+    public static let actionSaveChanges = NSLocalizedString(
+        "[Database/UnsavedChanges/saveAction]",
+        bundle: Bundle.framework,
+        value: "Save Changes",
+        comment: "Action/button to save accummulated modifications")
 
     public static let statusItemEdited = NSLocalizedString(
         "[Database/Item/Edited/state]",
         bundle: Bundle.framework,
         value: "Edited",
         comment: "Status of a database item (entry or group) after it was edited.")
+
+    public static let titleEntryPointsToDatabase = NSLocalizedString(
+        "[Database/Entry/LinkedDatabase/message]",
+        bundle: Bundle.framework,
+        value: "This entry points to another database.",
+        comment: "Info message for entries that contain information for opening a different database.")
 }
 // swiftlint:enable line_length

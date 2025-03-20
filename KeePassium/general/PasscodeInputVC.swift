@@ -46,7 +46,7 @@ final class PasscodeInputVC: UIViewController {
     @IBOutlet private weak var switchKeyboardButton: UIButton!
     @IBOutlet private weak var useBiometricsButton: UIButton!
     @IBOutlet private weak var instructionsToCancelButtonConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var biometricsHintLabel: UILabel!
+    @IBOutlet private weak var hintLabel: UILabel!
 
     public var mode: Mode = .setup
     public var shouldActivateKeyboard = true
@@ -86,6 +86,7 @@ final class PasscodeInputVC: UIViewController {
         }
         cancelButton.isHidden = !isCancelAllowed
         instructionsToCancelButtonConstraint.isActive = isCancelAllowed
+        hintLabel.isHidden = true
 
         setupKeyCommands()
         setKeyboardType(Settings.current.passcodeKeyboardType)
@@ -149,9 +150,13 @@ final class PasscodeInputVC: UIViewController {
             for: .normal)
         useBiometricsButton.accessibilityLabel = biometryType.name
 
-        let showMacOSBiometricHint = ProcessInfo.isRunningOnMac && !useBiometricsButton.isHidden
-        biometricsHintLabel.isHidden = !showMacOSBiometricHint
-        biometricsHintLabel.text = LString.hintPressEscForTouchID
+        let showMacOSBiometricHint = ProcessInfo.isRunningOnMac
+            && !useBiometricsButton.isHidden
+            && mode == .verification
+        if showMacOSBiometricHint {
+            hintLabel.isHidden = false
+            hintLabel.text = LString.hintPressEscForTouchID
+        }
     }
 
     public func showKeyboard() {
@@ -199,23 +204,51 @@ final class PasscodeInputVC: UIViewController {
 
         switch mode {
         case .verification:
-            break
+            delegate?.passcodeInput(self, didEnterPasscode: passcode)
         case .setup, .change:
-            guard ManagedAppConfig.shared.isAcceptable(appPasscode: passcode) else {
-                Diag.warning("App passcode strength does not meet organization's requirements")
-                showNotification(
-                    LString.orgRequiresStrongerPasscode,
-                    title: nil,
-                    image: .symbol(.managedParameter)?.withTintColor(.iconTint, renderingMode: .alwaysOriginal),
-                    hidePrevious: true,
-                    duration: 3
-                )
-                return
-            }
+            verifyNewPasscode(success: { [weak self] in
+                guard let self else { return }
+                delegate?.passcodeInput(self, didEnterPasscode: passcode)
+            })
         }
-        delegate?.passcodeInput(self, didEnterPasscode: passcode)
     }
 
+    private func verifyNewPasscode(success successHandler: @escaping () -> Void) {
+        assert(mode != .verification, "Should check only newly defined passcodes")
+
+        let entropy = Float(passcodeTextField.quality?.entropy ?? 0)
+        let length = passcodeTextField.text?.count ?? 0
+        guard ManagedAppConfig.shared.isAcceptableAppPasscode(length: length, entropy: entropy) else {
+            Diag.warning("App passcode strength does not meet organization's requirements")
+            showNotification(
+                LString.orgRequiresStrongerPasscode,
+                title: nil,
+                image: .symbol(.managedParameter)?.withTintColor(.iconTint, renderingMode: .alwaysOriginal),
+                hidePrevious: true,
+                duration: 3
+            )
+            return
+        }
+        successHandler()
+    }
+
+    private func refreshPasscodeQualityWarning(_ quality: PasswordQuality?) {
+        switch mode {
+        case .setup, .change:
+            guard let quality else {
+                hintLabel.isHidden = true
+                return
+            }
+            let isGoodEnough = Float(quality.entropy) > PasswordQuality.minAppPasscodeEntropy
+            hintLabel.isHidden = isGoodEnough
+            hintLabel.text = String.localizedStringWithFormat(
+                LString.Warning.iconWithMessageTemplate,
+                LString.appPasscodeTooWeak
+            )
+        default:
+            return
+        }
+    }
     @IBAction private func didPressSwitchKeyboard(_ sender: Any) {
         setKeyboardType(nextKeyboardType)
     }
@@ -245,13 +278,18 @@ extension PasscodeInputVC: UITextFieldDelegate, ValidatingTextFieldDelegate {
     }
 
     func validatingTextField(_ sender: ValidatingTextField, textDidChange text: String) {
-        guard mode == .verification,
-              sender.isValid
-        else {
-            return
-        }
-        if !Settings.current.isLockAllDatabasesOnFailedPasscode {
-            delegate?.passcodeInput(self, shouldTryPasscode: text)
+        switch mode {
+        case .change, .setup:
+            let quality = PasswordQuality(password: text)
+            passcodeTextField.quality = quality
+            refreshPasscodeQualityWarning(quality)
+        case .verification:
+            guard sender.isValid else {
+                return
+            }
+            if !Settings.current.isLockAllDatabasesOnFailedPasscode {
+                delegate?.passcodeInput(self, shouldTryPasscode: text)
+            }
         }
     }
 }
@@ -262,4 +300,11 @@ extension PasscodeInputVC: UIAdaptivePresentationControllerDelegate {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         didPressCancelButton(self)
     }
+}
+
+extension LString {
+    public static let appPasscodeTooWeak = NSLocalizedString(
+        "[AppLock/weakPasscodeWarning]",
+        value: "This passcode is easy to guess. Try entering a stronger one.",
+        comment: "Notification when user tries to set up too weak an app protection passcode.")
 }

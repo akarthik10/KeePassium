@@ -120,6 +120,7 @@ extension RemoteDataSource {
             authorizedItem.item,
             token: authorizedItem.token,
             tokenUpdater: { self.saveUpdatedToken($0, prefixedURL: url) },
+            timeout: timeout,
             completionQueue: completionQueue,
             completion: { result in
                 assert(completionQueue.isCurrent)
@@ -157,6 +158,7 @@ extension RemoteDataSource {
             contents: data,
             token: authorizedItem.token,
             tokenUpdater: { self.saveUpdatedToken($0, prefixedURL: url) },
+            timeout: timeout,
             completionQueue: completionQueue,
             completion: { result in
                 assert(completionQueue.isCurrent)
@@ -194,6 +196,7 @@ extension RemoteDataSource {
             authorizedItem.item,
             token: authorizedItem.token,
             tokenUpdater: { self.saveUpdatedToken($0, prefixedURL: url) },
+            timeout: timeout,
             completionQueue: completionQueue,
             completion: { result in
                 assert(completionQueue.isCurrent)
@@ -201,7 +204,7 @@ extension RemoteDataSource {
                 case .success(let remoteFileItem):
                     assert(remoteFileItem.fileInfo != nil, "File info must be defined for remote items")
                     let fileInfoOrDummy = remoteFileItem.fileInfo ??
-                        FileInfo(fileName: remoteFileItem.name, isInTrash: false)
+                        FileInfo(fileName: remoteFileItem.name, isInTrash: false, hash: nil)
                     completion(.success(fileInfoOrDummy))
                 case .failure(let error):
                     switch error {

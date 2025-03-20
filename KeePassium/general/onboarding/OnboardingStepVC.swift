@@ -23,9 +23,11 @@ final class OnboardingStepVC: UIViewController {
 
         view.backgroundColor = ImageAsset.backgroundPattern.asColor()
 
-        step.actions.forEach {
-            buttonsStackView.addArrangedSubview(createButton(forAction: $0, primary: true))
-        }
+        step.actions
+            .filter { !$0.attributes.contains(.hidden) }
+            .forEach {
+                buttonsStackView.addArrangedSubview(createButton(forAction: $0, primary: true))
+            }
         if step.canSkip,
            let skipAction = step.skipAction
         {
@@ -102,12 +104,6 @@ final class OnboardingStepVC: UIViewController {
 extension OnboardingStepVC {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        DispatchQueue.main.async {
-            self.refreshButtonsBackground()
-        }
-    }
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
         DispatchQueue.main.async {
             self.refreshButtonsBackground()
         }

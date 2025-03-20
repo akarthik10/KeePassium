@@ -15,26 +15,9 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     var autoFillCoordinator: AutoFillCoordinator! 
 
     override func viewDidLoad() {
+        log.trace("I live again /6")
         super.viewDidLoad()
         autoFillCoordinator = AutoFillCoordinator(rootController: self, context: extensionContext)
-        autoFillCoordinator.prepare()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        log.trace("viewWillAppear")
-        super.viewWillAppear(animated)
-        if !ProcessInfo.isRunningOnMac {
-            cacheKeyboard()
-            autoFillCoordinator?.start()
-        }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        log.trace("viewDidAppear")
-        if ProcessInfo.isRunningOnMac {
-            autoFillCoordinator.start()
-        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -43,33 +26,108 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         autoFillCoordinator?.cleanup()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        autoFillCoordinator?.handleMemoryWarning()
-    }
+}
 
-    @available(iOS 14, *)
-    private func cacheKeyboard() {
-        let textField = UITextField()
-        self.view.addSubview(textField)
-        textField.becomeFirstResponder()
-        textField.resignFirstResponder()
-        textField.removeFromSuperview()
+extension CredentialProviderViewController {
+    override func prepareInterfaceForExtensionConfiguration() {
+        log.trace("prepareInterfaceForExtensionConfiguration")
+        autoFillCoordinator.startConfigurationUI()
     }
 
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
-        autoFillCoordinator.serviceIdentifiers = serviceIdentifiers
+        log.trace("prepareCredentialList for passwords")
+        autoFillCoordinator.startUI(forServices: serviceIdentifiers, mode: .credentials)
     }
 
-    override func prepareInterfaceToProvideCredential(
-        for credentialIdentity: ASPasswordCredentialIdentity
+    override func prepareCredentialList(
+        for serviceIdentifiers: [ASCredentialServiceIdentifier],
+        requestParameters: ASPasskeyCredentialRequestParameters
     ) {
-        autoFillCoordinator.prepareUI(for: credentialIdentity)
+        log.trace("prepareCredentialList for passwords+passkeys")
+        autoFillCoordinator.startPasskeyAssertionUI(
+            allowPasswords: true,
+            clientDataHash: requestParameters.clientDataHash,
+            relyingParty: requestParameters.relyingPartyIdentifier,
+            forServices: serviceIdentifiers
+        )
     }
 
-    override func provideCredentialWithoutUserInteraction(
-        for credentialIdentity: ASPasswordCredentialIdentity
-    ) {
-        autoFillCoordinator.provideWithoutUserInteraction(for: credentialIdentity)
+    override func prepareOneTimeCodeCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
+        log.trace("prepareOneTimeCodeCredentialList")
+        autoFillCoordinator.startUI(forServices: serviceIdentifiers, mode: .oneTimeCode)
+    }
+
+#if !targetEnvironment(macCatalyst)
+    override func prepareInterfaceForUserChoosingTextToInsert() {
+        log.trace("prepareInterfaceForUserChoosingTextToInsert")
+        autoFillCoordinator.startUI(forServices: [], mode: .text)
+    }
+#endif
+
+    override func prepareInterfaceToProvideCredential(for credentialRequest: ASCredentialRequest) {
+        log.trace("prepareInterfaceToProvideCredential")
+        let identity = credentialRequest.credentialIdentity
+        switch credentialRequest.type {
+        case .password:
+            autoFillCoordinator.startUI(forIdentity: identity, mode: .credentials)
+        case .oneTimeCode:
+            autoFillCoordinator.startUI(forIdentity: identity, mode: .oneTimeCode)
+        case .passkeyAssertion:
+            guard let passkeyRequest = credentialRequest as? ASPasskeyCredentialRequest,
+                  let passkeyIdentity = passkeyRequest.credentialIdentity as? ASPasskeyCredentialIdentity
+            else {
+                assertionFailure()
+                log.error("Unexpected request type, cancelling")
+                extensionContext.cancelRequest(withError: ASExtensionError(.failed))
+                return
+            }
+            autoFillCoordinator.startPasskeyAssertionUI(
+                allowPasswords: false,
+                clientDataHash: passkeyRequest.clientDataHash,
+                relyingParty: passkeyIdentity.relyingPartyIdentifier,
+                forServices: [passkeyIdentity.serviceIdentifier]
+            )
+        default:
+            log.error("Unexpected credential request type: \(credentialRequest.type.debugDescription, privacy: .public)")
+            assertionFailure()
+            extensionContext.cancelRequest(withError: ASExtensionError(.failed))
+        }
+    }
+
+    override func provideCredentialWithoutUserInteraction(for credentialRequest: ASCredentialRequest) {
+        let type = credentialRequest.type.debugDescription
+        log.trace("provideCredentialWithoutUserInteraction: \(type, privacy: .public)")
+        let identity = credentialRequest.credentialIdentity
+        switch credentialRequest.type {
+        case .password:
+            autoFillCoordinator.provideWithoutUI(forIdentity: identity, mode: .credentials)
+        case .oneTimeCode:
+            autoFillCoordinator.provideWithoutUI(forIdentity: identity, mode: .oneTimeCode)
+        case .passkeyAssertion:
+            guard let request = credentialRequest as? ASPasskeyCredentialRequest else {
+                log.error("Passkey assertion request has a wrong type, cancelling")
+                assertionFailure()
+                extensionContext.cancelRequest(withError: ASExtensionError(.failed))
+                return
+            }
+            autoFillCoordinator.providePasskeyWithoutUI(
+                forIdentity: identity as! ASPasskeyCredentialIdentity,
+                clientDataHash: request.clientDataHash)
+        default:
+            log.error("Unexpected credential request type: \(credentialRequest.type.debugDescription, privacy: .public)")
+            assertionFailure()
+            extensionContext.cancelRequest(withError: ASExtensionError(.failed))
+        }
+    }
+
+    override func prepareInterface(forPasskeyRegistration registrationRequest: any ASCredentialRequest) {
+        log.trace("prepareInterfaceForPasskeyRegistration")
+        guard let request = registrationRequest as? ASPasskeyCredentialRequest else {
+            log.error("Unexpected passkey registration request type")
+            assertionFailure()
+            extensionContext.cancelRequest(withError: ASExtensionError(.failed))
+            return
+        }
+        autoFillCoordinator.startPasskeyRegistrationUI(request)
     }
 }

@@ -27,6 +27,10 @@ protocol DatabaseSettingsDelegate: AnyObject {
         forAutoFill: Bool,
         in viewController: DatabaseSettingsVC
     )
+    func didChangeSettings(
+        newExternalUpdateBehavior: ExternalUpdateBehavior,
+        in viewController: DatabaseSettingsVC
+    )
 }
 
 final class DatabaseSettingsVC: UITableViewController, Refreshable {
@@ -41,6 +45,7 @@ final class DatabaseSettingsVC: UITableViewController, Refreshable {
     var availableFallbackStrategies: Set<UnreachableFileFallbackStrategy> = []
     var fallbackTimeout: TimeInterval!
     var autoFillFallbackTimeout: TimeInterval!
+    var externalUpdateBehavior: ExternalUpdateBehavior!
 
     private let fallbackTimeoutFormatter: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()
@@ -58,6 +63,9 @@ final class DatabaseSettingsVC: UITableViewController, Refreshable {
         super.viewDidLoad()
         title = LString.titleDatabaseSettings
 
+        tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
+        tableView.estimatedSectionHeaderHeight = 18
+
         registerCellClasses(tableView)
         tableView.alwaysBounceVertical = false
         setupCloseButton()
@@ -66,6 +74,28 @@ final class DatabaseSettingsVC: UITableViewController, Refreshable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         refresh()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        tableView.removeObserver(self, forKeyPath: "contentSize")
+        super.viewWillDisappear(animated)
+    }
+
+    override func observeValue(
+        forKeyPath keyPath: String?,
+        of object: Any?,
+        change: [NSKeyValueChangeKey: Any]?,
+        context: UnsafeMutableRawPointer?
+    ) {
+        var preferredSize = CGSize(
+            width: max(tableView.contentSize.width, self.preferredContentSize.width),
+            height: max(tableView.contentSize.height, self.preferredContentSize.height)
+        )
+
+        preferredSize.width = 400
+        DispatchQueue.main.async { [self] in
+            self.preferredContentSize = preferredSize
+        }
     }
 
     func refresh() {
@@ -95,11 +125,12 @@ extension DatabaseSettingsVC {
         static let parameterValueCell = "ParameterValueCell"
     }
     private enum CellIndex {
-        static let sectionSizes = [1, 2, 3]
+        static let sectionSizes = [1, 3, 3]
 
         static let readOnly = IndexPath(row: 0, section: 0)
-        static let fileUnreachableTimeout = IndexPath(row: 0, section: 1)
-        static let fileUnreachableAction = IndexPath(row: 1, section: 1)
+        static let externalUpdateBehavior = IndexPath(row: 0, section: 1)
+        static let fileUnreachableTimeout = IndexPath(row: 1, section: 1)
+        static let fileUnreachableAction = IndexPath(row: 2, section: 1)
         static let quickTypeEnabled = IndexPath(row: 0, section: 2)
         static let autoFillFileUnreachableTimeout = IndexPath(row: 1, section: 2)
         static let autoFillFileUnreachableAction = IndexPath(row: 2, section: 2)
@@ -183,6 +214,13 @@ extension DatabaseSettingsVC {
                 as! ParameterValueCell
             configureOfflineAccessCell(cell, strategy: autoFillFallbackStrategy, forAutoFill: true)
             return cell
+        case CellIndex.externalUpdateBehavior:
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: CellID.parameterValueCell,
+                for: indexPath)
+                as! ParameterValueCell
+            configureExternalUpdateBehaviorCell(cell, behavior: externalUpdateBehavior)
+            return cell
         default:
             preconditionFailure("Unexpected cell index")
         }
@@ -190,7 +228,9 @@ extension DatabaseSettingsVC {
 
     private func configureReadOnlyCell(_ cell: SwitchCell) {
         cell.textLabel?.text = LString.titleFileAccessReadOnly
-        cell.theSwitch.isEnabled = delegate?.canChangeReadOnly(in: self) ?? false
+        let isEnabled = delegate?.canChangeReadOnly(in: self) ?? false
+        cell.setEnabled(isEnabled)
+        cell.theSwitch.isEnabled = isEnabled
         cell.theSwitch.isOn = isReadOnlyAccess
 
         cell.textLabel?.isAccessibilityElement = false
@@ -291,5 +331,33 @@ extension DatabaseSettingsVC {
             }
             self.delegate?.didChangeSettings(isQuickTypeEnabled: theSwitch.isOn, in: self)
         }
+    }
+
+    private func configureExternalUpdateBehaviorCell(
+        _ cell: ParameterValueCell,
+        behavior externalUpdateBehavior: ExternalUpdateBehavior
+    ) {
+        cell.textLabel?.text = LString.titleIfDatabaseModifiedExternally
+        cell.detailTextLabel?.text = externalUpdateBehavior.title
+
+        let actions = ExternalUpdateBehavior.allCases.map { behavior in
+            UIAction(
+                title: behavior.title,
+                state: behavior == externalUpdateBehavior ? .on : .off,
+                handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.delegate?.didChangeSettings(
+                        newExternalUpdateBehavior: behavior,
+                        in: self
+                    )
+                    self.refresh()
+                }
+            )
+        }
+        cell.menu = UIMenu(
+            title: LString.titleIfDatabaseModifiedExternally,
+            options: .displayInline,
+            children: actions
+        )
     }
 }

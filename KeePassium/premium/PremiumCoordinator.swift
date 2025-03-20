@@ -51,8 +51,6 @@ class PremiumCoordinator: NSObject, Coordinator {
             self.dismissHandler?(self)
         })
 
-        (UIApplication.shared as! KPApplication).showNetworkActivityIndicator()
-
         planPicker.isPurchaseEnabled = false
 
         if tryRestoringPurchasesFirst {
@@ -73,7 +71,6 @@ class PremiumCoordinator: NSObject, Coordinator {
 
     fileprivate func refreshAvailableProducts() {
         premiumManager.requestAvailableProducts(ofKind: .premium) { [weak self] products, error in
-            (UIApplication.shared as! KPApplication).hideNetworkActivityIndicator()
             guard let self = self else { return }
 
             self.planPicker.isPurchaseEnabled = true
@@ -123,34 +120,9 @@ extension PremiumCoordinator: PricingPlanPickerDelegate {
         restorePurchases()
     }
 
-    func didPressHelpButton(
-        for helpReference: PricingPlanCondition.HelpReference,
-        at popoverAnchor: PopoverAnchor,
-        in viewController: PricingPlanPickerVC
-    ) {
+    func didPressHelpLink(url: URL, at popoverAnchor: PopoverAnchor, in viewController: PricingPlanPickerVC) {
         assert(childCoordinators.isEmpty)
-        guard helpReference != .none else {
-            assertionFailure()
-            return
-        }
-
-        let helpRouter: NavigationRouter
-        if router.isHorizontallyCompact {
-            helpRouter = router
-        } else {
-            helpRouter = NavigationRouter.createModal(style: .popover, at: popoverAnchor)
-        }
-
-        let helpViewerCoordinator = HelpViewerCoordinator(router: helpRouter)
-        helpViewerCoordinator.dismissHandler = { [weak self] coordinator in
-            self?.removeChildCoordinator(coordinator)
-        }
-        helpViewerCoordinator.article = HelpArticle.load(helpReference.articleKey)
-        addChildCoordinator(helpViewerCoordinator)
-        helpViewerCoordinator.start()
-        if helpRouter !== router {
-            router.present(helpRouter, animated: true, completion: nil)
-        }
+        URLOpener(viewController).open(url: url)
     }
 }
 

@@ -1,18 +1,300 @@
 {
     "sections": [
         {
-            "version": "1.53",
-            "releaseDate": "2024-07-18T00:00:00Z",
+            "version": "2.3",
+            "releaseDate": "2025-01-17T00:00:00Z",
             "items": [
                 {
-                    "title": "Added: Reordering of groups and entries"
+                    "title": "Added: Use minus sign to exclude terms from search results",
+                    "github": "#401",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Added: iOS: Custom actions when device is shaken (see Data Protection settings)",
+                    "os": "ios"
+                },
+                {
+                    "title": "Fixed: Org: Crash when entering text",
+                    "edition": "org",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Fixed: AutoFill: Opening of last-used database",
+                    "edition": "free,pro",
+                    "github": "#412",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Fixed: Preserve DB association for not-imported key files",
+                    "credits": "Ken"
+                },
+                {
+                    "title": "Fixed: macOS: UI fixes in Premium Upgrade dialog",
+                    "os": "macos",
+                    "github": "#418, #419",
+                    "credits": "vit9696"
+                },
+                {
+                    "title": "Fixed: macOS: Settings menu text",
+                    "os": "macos",
+                    "github": "#414",
+                    "credits": "Eitot"
+                },
+                {
+                    "title": "Fixed: macOS: Allow smaller app window",
+                    "os": "macos",
+                    "credits": "Luke"
+                }
+            ]
+        },
+        {
+            "version": "2.2",
+            "releaseDate": "2024-12-22T00:00:00Z",
+            "items": [
+                {
+                    "title": "Improved: Minor UI improvements"
+                },
+                {
+                    "title": "Changed: macOS: Removed unused Camera permission (since there is no QR scanner)",
+                    "os": "macos",
+                    "credits": "Apple reviewer"
+                }
+            ]
+        },
+        {
+            "version": "2.1",
+            "releaseDate": "2024-12-19T00:00:00Z",
+            "items": [
+                {
+                    "title": "Improved: AutoFill: Create passkeys in existing entries",
+                    "edition": "free,pro",
+                    "credits": "everyone",
+                    "github": "#297"
+                },
+                {
+                    "title": "Improved: Updated IT, NL, zh-CN translations",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Fixed: AutoFill: Behavior when local DBs are unavailable",
+                    "edition": "free,pro",
+                    "github": "#381"
+                },
+                {
+                    "title": "Fixed: AutoFill: When appropriate, accept _either_ passkeys or passwords",
+                    "edition": "free,pro",
+                    "credits": "bob-lobster",
+                    "github": "#405"
+                },
+                {
+                    "title": "Fixed: AutoFill: Prevent passkey creation in read-only DBs",
+                    "edition": "free,pro",
+                    "credits": "Jerroder",
+                    "github": "#404"
+                },
+                {
+                    "title": "Fixed: AutoFill: Partial fix for QR-based passkey assertions",
+                    "edition": "free,pro",
+                    "credits": "everyone",
+                    "github": "#408"
+                },
+                {
+                    "title": "Fixed: It was impossible to enter a strong app passcode (regression in 1.54.155)",
+                    "credits": "Jan and Yuri",
+                    "github": "#409"
+                },
+                {
+                    "title": "Fixed: Enforce file timeouts on all direct connections",
+                    "credits": "jasperweiss",
+                    "github": "#398"
+                },
+                {
+                    "title": "Fixed: Some strings were shown untranslated [thanks, Francesco]",
+                    "credits": "Francesco"
+                }
+            ]
+        },
+        {
+            "version": "2.0",
+            "releaseDate": "2024-12-12T00:00:00Z",
+            "items": [
+                {
+                    "title": "This version requires at least iOS 17 / macOS 14."
+                },
+                {
+                    "title": "KeePassium for macOS is now officially available."
+                },
+                {
+                    "title": "KeePassium for iOS has completed an independent security audit by Cure53."
+                },
+                {
+                    "title": "Added: AutoFill: Create and use passkeys",
+                    "github": "#297",
+                    "edition": "free,pro"
+                },
+                {
+                    "title": "Added: AutoFill: Insert any field to any input via context menu (iOS 18+)",
+                    "github": "#396",
+                    "os": "ios",
+                    "edition": "free,pro"
+                },
+                {
+                    "title": "Added: AutoFill: Fill out OTP codes (iOS 18+)",
+                    "edition": "free,pro"
+                },
+                {
+                    "title": "Added: Database export to CSV format",
+                    "github": "#262",
+                    "os": "macos"
+                },
+                {
+                    "title": "Added: Search for passkeys (is:passkey) and large attachments (is:large)"
+                },
+                {
+                    "title": "Changed: Org: Updated to MSAL 1.6.2 and Intune SDK 20.2.1",
+                    "edition": "org"
+                },
+                {
+                    "title": "Improved: macOS: Main menu, toolbar and keyboard shortcuts",
+                    "os": "macos"
+                },
+                {
+                    "title": "Improved: Faster Quick AutoFill for remote databases (prefers local cache)",
+                    "edition": "free,pro",
+                    "credits": "jasperweiss",
+                    "github": "#391"
+                },
+                {
+                    "title": "Improved: Protecting key file field like a password",
+                    "credits": "Jason"
+                },
+                {
+                    "title": "Improved: Added possibility to download favicons for selected entries",
+                    "github": "#320",
+                    "credits": "vit9696"
+                },
+                {
+                    "title": "Improved: Added possibility to delete unused custom icons"
+                },
+                {
+                    "title": "Improved: Folder lists are sorted for all direct connections now"
+                },
+                {
+                    "title": "Improved: Entry Viewer indicates presence of attachments in Files tab",
+                    "credits": "u/gripe_and_complain"
+                },
+                {
+                    "title": "Changed: Removed post-AutoFill popups with OTP codes as redundant",
+                    "edition": "free,pro"
+                },
+                {
+                    "title": "Improved: Updated all translations",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Improved: New parameters for managed AppConfig: `allowAppProtection`, `minimumAppPasscodeLength`, `minimumDatabasePasswordLength`, `allowDatabasePrint`, `allowDatabaseEncryptionSettings`, and default KDF settings",
+                    "credits": "S.G.",
+                    "edition": "org"
+                },
+                {
+                    "title": "Improved: Managed parameter `allowedFileProviders` can be defined as string",
+                    "credits": "S.G.",
+                    "edition": "org"
+                },
+                {
+                    "title": "Improved: OneDrive Personal and Business can be allowed/blocked separately",
+                    "credits": "S.G.",
+                    "edition": "org"
+                },
+                {
+                    "title": "Improved: Disable UI for storage locations blocked by AppConfig",
+                    "credits": "S.G.",
+                    "edition": "org"
+                },
+                {
+                    "title": "Fixed: macOS: AutoFill dialog could get stuck in a blank state",
+                    "github": "#392",
+                    "credits": "everyone",
+                    "os": "macos"
+                },
+                {
+                    "title": "Fixed: macOS: Tag selection/deselection did not work properly",
+                    "os": "macos"
+                },
+                {
+                    "title": "Fixed: Crash when changing entry/group icon on iOS 18",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Fixed: AutoFill could load databases twice sometimes",
+                    "edition": "free,pro"
+                },
+                {
+                    "title": "Fixed: Org: parsing of yes/no parameters",
+                    "credits": "Martin",
+                    "edition": "org"
+                },
+                {
+                    "title": "Fixed: Enforce strength checks on new app passcode and DB passwords (KEE-01-001)"
+                },
+                {
+                    "title": "Fixed: Warn about risks of bulk favicon download (KEE-01-002)"
+                },
+                {
+                    "title": "Fixed: Enforce reasonable KDF parameter limits (KEE-01-003)"
+                }
+            ]
+        },
+        {
+            "version": "1.53",
+            "releaseDate": "2024-09-12T00:00:00Z",
+            "items": [
+                {
+                    "title": "Added: Support for smart groups",
+                    "github": "#8, #190, #264"
+                },
+                {
+                    "title": "Added: Support for linked databases aka AutoOpen",
+                    "github": "#202",
+                    "credits": "everyone",
+                    "type": 2
+                },
+                {
+                    "title": "Added: Support for extended search syntax",
+                    "github": "Closes #190 and #383",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Added: Detecting external DB changes on app activation, suggesting reload",
+                    "github": "Related #373",
+                },
+                {
+                    "title": "Added: Custom reordering of groups and entries"
                 },
                 {
                     "title": "Added: Multi-select and bulk operations on groups and entries"
                 },
                 {
-                    "title": "Added: Support for smart groups",
-                    "github": "#8, #190, #264"
+                    "title": "Added: OTP overview mode (via smart group)",
+                    "github": "Closes #8",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Added: Ability to hide local files from iOS Files/ macOS Finder",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Improved: New parameters for managed AppConfig: `allowFaviconDownload` and `allowPasswordAudit`",
+                    "edition": "org",
+                    "credits": "I.R."
+                },
+                {
+                    "title": "Improved: Org: Possibility to disable copy-to-clipboard via managed AppConfig",
+                    "edition": "org"
+                },
+                {
+                    "title": "Improved: Allow entry field references in free version, no longer a premium feature",
+                    "edition": "free"
                 },
                 {
                     "title": "Improved: AutoFill will use perfect-match entry even if there are partial matches",
@@ -20,13 +302,44 @@
                     "credits": "BoKKeR111"
                 },
                 {
+                    "title": "Improved: Refined DB viewer and DB picker toolbars and menus"
+                },
+                {
+                    "title": "Improved: Added presets to Smart Group Editor"
+                },
+                {
+                    "title": "Improved: macOS: Propose app reset if launching with Ctrl pressed",
+                    "os": "macos"
+                },
+                {
+                    "title": "Improved: Enable cache fallback for local DBs",
+                    "github": "#381",
+                    "credits": "Andreas"
+                },
+                {
+                    "title": "Improved: AutoFill: notify if main app's dir unavailable",
+                    "github": "Closes #381",
+                    "credits": "Andreas"
+                },
+                {
+                    "title": "Improved: Improved AutoFill setup workflow"
+                },
+                {
+                    "title": "Improved: Updated all translations",
+                    "credits": "everyone"
+                },
+                {
+                    "title": "Improved: Minor UI improvements here and there"
+                },
+                {
                     "title": "Fixed: Direct Dropbox connection could randomly fail with \"Network connection lost\"",
-                    "github": "Fixes #377"
+                    "github": "Fixes #377",
+                    "credits": "everyone"
                 },
                 {
                     "title": "Fixed: Processing WebDAV file lists with custom namespaces",
                     "github": "Fixes #378",
-                    "credits": "QueenGit"
+                    "credits": "QueenGit and D.J."
                 },
                 {
                     "title": "Fixed: Better protection of user activity timestamp and file references",
@@ -34,8 +347,31 @@
                     "credits": "eonist"
                 },
                 {
-                    "title": "Fixed: Localization of app and DB icon settings",
+                    "title": "Fixed: Ignore local files if local storage is forbidden via AppConfig",
+                    "edition": "org",
+                    "credits": "I.R."
+                },
+                {
+                    "title": "Fixed: Copying of URLs on macOS",
+                    "os": "macos",
+                    "github": "#384",
+                    "credits": "Johannes"
+                },
+                {
+                    "title": "Fixed: Printing in \"Designed for iPad\" builds",
+                    "os": "macos",
+                    "credits": "Bernhard"
+                },
+                {
+                    "title": "Fixed: Some toolbar buttons were untranslated in VoiceOver mode",
+                    "credits": "Michael"
+                },
+                {
+                    "title": "Fixed: Some app settings were untranslated",
                     "credits": "katullo11"
+                },
+                {
+                    "title": "Fixed: Enforcing clipboard timeout also in text fields' menus"
                 },
                 {
                     "title": "Fixed: Minor UI fixes here and there"

@@ -43,14 +43,26 @@ final class GroupViewerEntryCell: UITableViewCell {
     @IBOutlet private weak var showOTPButton: UIButton!
     @IBOutlet private weak var otpView: OTPView!
     @IBOutlet private weak var attachmentIndicator: UIImageView!
+    @IBOutlet private weak var passkeyIndicator: UIImageView!
 
     var hasAttachments: Bool = false {
         didSet {
-            setVisible(attachmentIndicator, hasAttachments)
+            attachmentIndicator.setVisible(hasAttachments)
+        }
+    }
+    var hasPasskey: Bool = false {
+        didSet {
+            passkeyIndicator.setVisible(hasPasskey)
         }
     }
 
     var totpGenerator: TOTPGenerator? {
+        didSet {
+            refresh()
+        }
+    }
+
+    var shouldHighlightOTP: Bool = false {
         didSet {
             refresh()
         }
@@ -81,23 +93,23 @@ final class GroupViewerEntryCell: UITableViewCell {
         }
     }
 
-    private func setVisible(_ view: UIView, _ visible: Bool) {
-        let isViewAlreadyVisible = !view.isHidden
-        guard visible != isViewAlreadyVisible else {
-            return
-        }
-        view.isHidden = !visible
-    }
-
     public func refresh() {
         guard let totpGenerator = totpGenerator else {
-            setVisible(showOTPButton, false)
-            setVisible(otpView, false)
+            showOTPButton.setVisible(false)
+            otpView.setVisible(false)
             return
         }
-        if otpView.isHidden {
-            setVisible(showOTPButton, true)
-            return
+
+        if shouldHighlightOTP {
+            otpView.normalColor = .actionTint
+            showOTPButton.setVisible(false)
+            otpView.setVisible(true)
+        } else {
+            otpView.normalColor = .primaryText
+            if otpView.isHidden {
+                showOTPButton.setVisible(true)
+                return
+            }
         }
 
         let otpValue = totpGenerator.generate()
@@ -105,13 +117,26 @@ final class GroupViewerEntryCell: UITableViewCell {
         otpView.remainingTime = totpGenerator.remainingTime
         otpView.refresh()
 
+        otpView.tapHandler = { [weak self] in
+            guard let self else { return }
+            if shouldHighlightOTP {
+                copyOTP(otpValue)
+            } else {
+                animateOTPValue(visible: false)
+            }
+        }
+
         let justSwitched = !showOTPButton.isHidden
         if justSwitched {
             animateOTPValue(visible: true)
-            Clipboard.general.insert(otpValue)
-            HapticFeedback.play(.copiedToClipboard)
-            otpCopiedHandler?()
+            copyOTP(otpValue)
         }
+    }
+
+    private func copyOTP(_ otpValue: String) {
+        Clipboard.general.copyWithTimeout(otpValue)
+        HapticFeedback.play(.copiedToClipboard)
+        otpCopiedHandler?()
     }
 
     private func animateOTPValue(visible: Bool) {
@@ -136,7 +161,7 @@ final class GroupViewerEntryCell: UITableViewCell {
     }
 
     @IBAction private func didPressShowOTP(_ sender: UIButton) {
-        setVisible(otpView, true)
+        otpView.setVisible(true)
         refresh()
     }
 }

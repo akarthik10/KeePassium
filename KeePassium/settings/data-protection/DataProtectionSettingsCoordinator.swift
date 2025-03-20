@@ -64,15 +64,9 @@ extension DataProtectionSettingsCoordinator {
         router.push(clipboardTimeoutVC, animated: true, onPop: nil)
     }
 
-    private func maybeSetLockDatabasesOnTimeout(_ value: Bool, in viewController: UIViewController) {
-        performPremiumActionOrOfferUpgrade(
-            for: .canKeepMasterKeyOnDatabaseTimeout,
-            in: viewController,
-            actionHandler: { [weak self] in
-                Settings.current.isLockDatabasesOnTimeout = value
-                self?.refresh()
-            }
-        )
+    private func showShakeGestureActionSettings() {
+        let shakeGestureActionVC = SettingsShakeGestureActionVC.make(delegate: self)
+        router.push(shakeGestureActionVC, animated: true, onPop: nil)
     }
 }
 
@@ -85,11 +79,16 @@ extension DataProtectionSettingsCoordinator: SettingsDataProtectionViewCoordinat
         showClipboardTimeoutSettingsPage()
     }
 
+    func didPressShakeGestureAction(in viewController: SettingsDataProtectionVC) {
+        showShakeGestureActionSettings()
+    }
+
     func didToggleLockDatabasesOnTimeout(
         newValue: Bool,
         in viewController: SettingsDataProtectionVC
     ) {
-        maybeSetLockDatabasesOnTimeout(newValue, in: viewController)
+        Settings.current.isLockDatabasesOnTimeout = newValue
+        refresh()
     }
 }
 
@@ -126,6 +125,32 @@ extension DataProtectionSettingsCoordinator: SettingsClipboardTimeoutVCDelegate 
             DispatchQueue.main.async { [weak router] in
                 router?.pop(viewController: viewController, animated: true)
             }
+        }
+    }
+}
+
+extension DataProtectionSettingsCoordinator: SettingsShakeGestureActionVCDelegate {
+    func didSelectShakeGesture(
+        _ action: Settings.ShakeGestureAction,
+        in viewController: SettingsShakeGestureActionVC
+    ) {
+        Settings.current.shakeGestureAction = action
+        refresh()
+
+        if Settings.current.isManaged(key: .shakeGestureAction) {
+            viewController.showManagedSettingNotification()
+        }
+    }
+
+    func didSetShakeGestureConfirmation(
+        _ shouldConfirm: Bool,
+        in viewController: SettingsShakeGestureActionVC
+    ) {
+        Settings.current.isConfirmShakeGestureAction = shouldConfirm
+        refresh()
+
+        if Settings.current.isManaged(key: .confirmShakeGestureAction) {
+            viewController.showManagedSettingNotification()
         }
     }
 }

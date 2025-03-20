@@ -21,6 +21,8 @@ public class EntryField: Eraseable {
 
     public static let tags = "tags" + UUID().uuidString
 
+    public static let passkey = "passkey" + UUID().uuidString
+
     public var name: String
     public var value: String {
         didSet {
@@ -28,6 +30,19 @@ public class EntryField: Eraseable {
         }
     }
     public var isProtected: Bool
+
+    public var visibleName: String {
+        switch name {
+        case Self.title: return LString.fieldTitle
+        case Self.userName: return LString.fieldUserName
+        case Self.password: return LString.fieldPassword
+        case Self.url: return LString.fieldURL
+        case Self.notes: return LString.fieldNotes
+        case Self.tags: return LString.fieldTags
+        default:
+            return name
+        }
+    }
 
     internal var resolvedValueInternal: String?
 
@@ -37,6 +52,14 @@ public class EntryField: Eraseable {
             return value
         }
         return resolvedValueInternal!
+    }
+
+    public var decoratedResolvedValue: String {
+        if hasReferences {
+            return "→ " + resolvedValue
+        } else {
+            return resolvedValue
+        }
     }
 
     private(set) public var resolveStatus = EntryFieldReference.ResolveStatus.noReferences
@@ -102,26 +125,24 @@ public class EntryField: Eraseable {
     }
 
     public func contains(
-        word: Substring,
-        includeFieldNames: Bool,
-        includeProtectedValues: Bool,
-        includePasswords: Bool,
+        textWord: Substring,
+        scope: SearchQuery.FieldScope,
         options: String.CompareOptions
     ) -> Bool {
-        if name == EntryField.password && !includePasswords {
-            return false 
+        if name == EntryField.password && !scope.contains(.passwordField) {
+            return false
         }
 
-        if includeFieldNames
+        if scope.contains(.fieldNames)
            && !isStandardField
-           && name.localizedContains(word, options: options)
+           && name.localizedContains(textWord, options: options)
         {
             return true
         }
 
-        let includeFieldValue = !isProtected || includeProtectedValues
+        let includeFieldValue = !isProtected || scope.contains(.protectedValues)
         if includeFieldValue {
-            return resolvedValue.localizedContains(word, options: options)
+            return resolvedValue.localizedContains(textWord, options: options)
         }
         return false
     }
